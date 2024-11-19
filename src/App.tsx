@@ -11,12 +11,9 @@ import styles from './styles.module.css';
 
 /* 
 
-Category ideas:
-Bars - burrow, EO, SILY, old mates place, tiki bar
-Something about the places we're going to
-movies we've watched together
-stuff from melbourne
-things we've done with lauren - distilled, burlesque/swamp, antiquing, 
+TODO:
+add "one away" message
+
 */
 
 type Category = string;
@@ -26,17 +23,46 @@ type Color = 'yellow' | 'green' | 'blue' | 'purple';
 type Status = 'win' | 'loss' | 'inprogress';
 
 const GAME: Record<Category, Word[]> = {
-  'Category 1': ['Another', 'Bee', 'Cards', 'Digging'],
-  'Category 2': ['Eager', 'Flies', 'Green', 'Helicopter'],
-  'Category 3': ['Indigo', 'Jolly', 'Keeper', 'Lemon'],
-  'Category 4': ['Me', 'November', 'Oven', 'Pied Piper i guess'],
+  'Trivia rounds at the Bearded Tit': [
+    'Cryptic',
+    'General',
+    'Kazoo',
+    'Picture',
+  ],
+  'Monster flavours': ['Mango', 'Peach', 'Strawberry', 'Violet'],
+  'Songs on the Orpheum playlist': [
+    'Afterlife',
+    'Dissolve',
+    'Glasses',
+    'Whisper',
+  ],
+  '_____ Quartz': ['Clear', 'Crystal', 'Rose', 'Smoky'],
 };
 
+const SORTED_WORDS: Word[] = [
+  'Crystal',
+  'Clear',
+  'Picture',
+  'Dissolve',
+  'General',
+  'Glasses',
+  'Kazoo',
+  'Afterlife',
+  'Strawberry',
+  'Whisper',
+  'Peach',
+  'Smoky',
+  'Cryptic',
+  'Rose',
+  'Mango',
+  'Violet',
+];
+
 const CATEGORY_COLOURS: Record<Category, Color> = {
-  'Category 1': 'yellow',
-  'Category 2': 'green',
-  'Category 3': 'blue',
-  'Category 4': 'purple',
+  'Monster flavours': 'yellow',
+  'Trivia rounds at the Bearded Tit': 'green',
+  'Songs on the Orpheum playlist': 'blue',
+  '_____ Quartz': 'purple',
 };
 
 const CATEGORY_BY_ATTEMPT: Record<Attempt, Category> = Object.fromEntries(
@@ -87,8 +113,8 @@ const FoundCategory: FC<{ category: Category }> = ({ category }) => {
   const color = `var(--${colour}-text)`;
   return (
     <div className={styles.foundCategory} style={{ backgroundColor, color }}>
-      <div>{category}</div>
-      <div>{toAttempt(GAME[category])}</div>
+      <div style={{ fontSize: 18 }}>{category}</div>
+      <div style={{ fontSize: 14 }}>{toAttempt(GAME[category])}</div>
     </div>
   );
 };
@@ -98,23 +124,21 @@ const Message: FC<PropsWithChildren> = ({ children }) => {
 };
 
 export const App: FC = () => {
-  const initialWords = Object.values(GAME).flat();
-  const [remainingWords, setRemainingWords] = useState<Word[]>(initialWords);
+  const [remainingWords, setRemainingWords] = useState<Word[]>(SORTED_WORDS);
   const [foundCategories, setFoundCategores] = useState<Category[]>([]);
   const [selected, setSelected] = useState<Word[]>([]);
   const [attempts, setAttempts] = useState<Attempt[]>([]);
   const [message, setMessage] = useState<string>('');
   const [status, setStatus] = useState<Status>('inprogress');
 
-  // TODO fail when out of attempts
   const totalAttempts = 4;
   const attemptsRemaining = totalAttempts - attempts.length;
 
   useEffect(() => {
-    if (status === 'inprogress') {
+    if (status !== 'loss') {
       setTimeout(() => {
         setMessage('');
-      }, 3500);
+      }, 2500);
     }
   }, [message]);
 
@@ -148,7 +172,7 @@ export const App: FC = () => {
   const reset = useCallback(() => {
     setAttempts([]);
     setSelected([]);
-    setRemainingWords(initialWords);
+    setRemainingWords(SORTED_WORDS);
     setFoundCategores([]);
     setStatus('inprogress');
     setMessage('Resetting board');

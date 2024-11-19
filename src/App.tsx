@@ -9,13 +9,6 @@ import {
 
 import styles from './styles.module.css';
 
-/* 
-
-TODO:
-add "one away" message
-
-*/
-
 type Category = string;
 type Word = string;
 type Attempt = string;
@@ -169,6 +162,14 @@ export const App: FC = () => {
     [selected, setSelected],
   );
 
+  const isOneAway = useCallback(() => {
+    return (
+      Object.values(GAME)
+        .map((words) => words.filter((w) => selected.includes(w)))
+        .filter((matching) => matching.length === 3).length > 0
+    );
+  }, [selected]);
+
   const reset = useCallback(() => {
     setAttempts([]);
     setSelected([]);
@@ -176,11 +177,11 @@ export const App: FC = () => {
     setFoundCategores([]);
     setStatus('inprogress');
     setMessage('Resetting board');
-  }, [setAttempts]);
+  }, []);
 
   const deselectAll = useCallback(() => {
     setSelected([]);
-  }, [setSelected]);
+  }, []);
 
   const submit = useCallback(() => {
     const attempt = toAttempt(selected);
@@ -192,6 +193,9 @@ export const App: FC = () => {
     const category = CATEGORY_BY_ATTEMPT[attempt] || null;
     if (!category) {
       setAttempts([...attempts, attempt]);
+      if (isOneAway()) {
+        setMessage('One away...');
+      }
       return;
     }
 

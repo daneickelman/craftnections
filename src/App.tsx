@@ -195,6 +195,8 @@ export const App: FC = () => {
       setAttempts([...attempts, attempt]);
       if (isOneAway()) {
         setMessage('One away...');
+      } else {
+        setMessage('Nope...');
       }
       return;
     }
